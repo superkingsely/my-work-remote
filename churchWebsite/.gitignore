@@ -1,0 +1,68 @@
+
+# ==============================
+# Visual Studio / VS Code
+# ==============================
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ==============================
+# .NET build output
+# ==============================
+**/bin/
+**/obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+artifacts/
+
+# ==============================
+# NuGet
+# ==============================
+*.nupkg
+*.snupkg
+.nuget/
+
+# ==============================
+# Logs and temporary files
+# ==============================
+*.log
+logs/
+[Ll]ogs/
+*.tmp
+*.temp
+
+# ==============================
+# Local environment / secrets
+# ==============================
+.env
+.env.*
+!.env.example
+secrets.json
+appsettings.Local.json
+
+# ==============================
+# Databases and local data
+# ==============================
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ==============================
+# OS files
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Frontend dependencies (if applicable)
+# ==============================
+**/node_modules/
