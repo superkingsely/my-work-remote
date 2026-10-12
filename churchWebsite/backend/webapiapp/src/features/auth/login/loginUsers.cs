@@ -5,15 +5,19 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 [ApiController]
+[Route("api/[controller]")]
 public class LoginUserController : ControllerBase
 {
     private readonly UserManager<Appuser> _userManager;
     private readonly SignInManager<Appuser> _signInManager;
+    private readonly CreateJwt _createJwt;
 
-    public LoginUserController(UserManager<Appuser> userManager, SignInManager<Appuser> signInManager)
+    public LoginUserController(UserManager<Appuser> userManager, SignInManager<Appuser> signInManager, CreateJwt createJwt)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+
+        _createJwt = createJwt;
     }
 
     [HttpPost("login")]

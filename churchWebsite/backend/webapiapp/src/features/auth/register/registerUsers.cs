@@ -4,6 +4,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
+[ApiController]
+[Route("api/[controller]")]
 public class RegisterUsersController : ControllerBase
 {
     private readonly UserManager<Appuser> _userManager;

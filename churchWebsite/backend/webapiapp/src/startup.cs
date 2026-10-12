@@ -10,6 +10,8 @@ public static class Startup
         builder.AddDependencydatabase();
         builder.AddValidatejwt();
         builder.AddCorsPolicy();
+
+        builder.Services.AddScoped<CreateJwt>();
         return builder;
     }
 
