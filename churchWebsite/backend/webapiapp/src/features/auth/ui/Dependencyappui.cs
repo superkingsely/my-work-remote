@@ -8,7 +8,6 @@ public static class Dependencyappui
     {
         builder.Services.AddOpenApi();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddControllers();
         return builder;
     }
     
@@ -21,7 +20,7 @@ public static class Dependencyappui
             options.SwaggerEndpoint("/openapi/v1.json", "CJ API V1");
             // options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
         });
-        app.MapControllers();
+       
         return app;
     }
 }

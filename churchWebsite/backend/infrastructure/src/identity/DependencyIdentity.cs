@@ -14,13 +14,7 @@ public static WebApplicationBuilder AddDependencyidentity(this WebApplicationBui
         return builder;
     }
 
-    public static WebApplication UseDependencyidentity(this WebApplication app)
-    {
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        return app;
-    }
+  
 
    
 }
