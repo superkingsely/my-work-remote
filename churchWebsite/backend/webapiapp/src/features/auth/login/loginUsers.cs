@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+
 [ApiController]
 [Route("api/[controller]")]
 public class LoginUserController : ControllerBase
@@ -37,6 +38,12 @@ public class LoginUserController : ControllerBase
 
         // You can generate a JWT token here and return it to the client
         // For simplicity, we'll just return a success message
-        return Ok("Login successful!");
+        var res = new
+        {
+            userId = user.Id,
+            userName = user.UserName,
+            token = await _createJwt.GenerateToken(user)
+        };
+        return Ok(res);
     }
 }

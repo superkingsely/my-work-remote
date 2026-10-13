@@ -8,7 +8,7 @@ public static class Startup
         builder.Services.AddControllers();
         builder.AddDependencyidentity();
         builder.AddDependencydatabase();
-        builder.AddValidatejwt();
+        builder.AddValidatejwt(builder.Configuration);
         builder.AddCorsPolicy();
 
         builder.Services.AddScoped<CreateJwt>();

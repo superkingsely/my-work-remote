@@ -2,7 +2,7 @@
 
 public static class Validatejwt
 {
-    public static WebApplicationBuilder AddValidatejwt(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddValidatejwt(this WebApplicationBuilder builder, IConfiguration configuration)
     {
         builder.Services.AddAuthentication(options =>
         {
@@ -17,9 +17,12 @@ public static class Validatejwt
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = "your-issuer",
-                ValidAudience = "your-audience",
-                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes("your-secret-key"))
+                ValidIssuer = configuration["jwt:Issuer"],
+                ValidAudience = configuration["jwt:Audience"],
+                IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["jwt:Key"])),
+                //code for validminutes = int.Parse(configuration["validminutes"])
+                ClockSkew = TimeSpan.Zero
+
             };
         });
 
