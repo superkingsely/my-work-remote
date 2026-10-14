@@ -41,6 +41,9 @@ namespace infrastructure.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("LegalMemberOfTheChurch")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
@@ -214,6 +217,47 @@ namespace infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("UserMembership", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AppuserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChurchBranchId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChurchBranchName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChurchId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChurchName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppuserId");
+
+                    b.ToTable("UserMemberships");
+                });
+
             modelBuilder.Entity("domain.src.church.Church", b =>
                 {
                     b.Property<Guid>("Id")
@@ -221,6 +265,57 @@ namespace infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Address")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("ItHasBranch")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("State")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ZipCode")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Churches");
+                });
+
+            modelBuilder.Entity("domain.src.church.ChurchBranch", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ChurchId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("City")
@@ -256,7 +351,9 @@ namespace infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Churches");
+                    b.HasIndex("ChurchId");
+
+                    b.ToTable("ChurchBranches");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -308,6 +405,34 @@ namespace infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("UserMembership", b =>
+                {
+                    b.HasOne("Appuser", null)
+                        .WithMany("MemberOfWichChurchAndBranch")
+                        .HasForeignKey("AppuserId");
+                });
+
+            modelBuilder.Entity("domain.src.church.ChurchBranch", b =>
+                {
+                    b.HasOne("domain.src.church.Church", "Church")
+                        .WithMany("ChurchBranches")
+                        .HasForeignKey("ChurchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Church");
+                });
+
+            modelBuilder.Entity("Appuser", b =>
+                {
+                    b.Navigation("MemberOfWichChurchAndBranch");
+                });
+
+            modelBuilder.Entity("domain.src.church.Church", b =>
+                {
+                    b.Navigation("ChurchBranches");
                 });
 #pragma warning restore 612, 618
         }

@@ -9,4 +9,6 @@ public class Appdbcontext : IdentityDbContext<Appuser>
     }
 
     public DbSet<Church> Churches{get;set;}
+    public DbSet<ChurchBranch> ChurchBranches{get;set;}
+    public DbSet<UserMembership> UserMemberships{get;set;}
 }
