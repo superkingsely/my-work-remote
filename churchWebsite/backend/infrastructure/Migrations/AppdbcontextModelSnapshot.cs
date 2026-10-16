@@ -321,9 +321,6 @@ namespace infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("AppuserId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("ChurchId")
                         .HasColumnType("TEXT");
 
@@ -348,8 +345,6 @@ namespace infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AppuserId");
 
                     b.HasIndex("ChurchId");
 
@@ -422,10 +417,6 @@ namespace infrastructure.Migrations
 
             modelBuilder.Entity("domain.src.church.UserMembership", b =>
                 {
-                    b.HasOne("Appuser", null)
-                        .WithMany("MemberOfWichChurchAndBranch")
-                        .HasForeignKey("AppuserId");
-
                     b.HasOne("domain.src.church.Church", "Church")
                         .WithMany()
                         .HasForeignKey("ChurchId")
@@ -433,7 +424,7 @@ namespace infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Appuser", null)
-                        .WithMany()
+                        .WithMany("MemberOfWichChurchAndBranch")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

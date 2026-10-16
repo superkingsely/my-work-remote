@@ -27,11 +27,11 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetUsers()
     {
         var users = await userManager.Users
-            .Include(u => u.MemberOfWichChurchAndBranch)
             .Select(u => new
             {
                 Names = $"{u.FirstName} {u.LastName}",
                 Email = u.Email,
+
                 WhichChurch = u.MemberOfWichChurchAndBranch
                     .Select(m => new
                     {
@@ -44,4 +44,5 @@ public class UserController : ControllerBase
 
         return Ok(users);
     }
+
 }

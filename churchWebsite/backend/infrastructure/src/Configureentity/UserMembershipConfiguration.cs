@@ -1,6 +1,3 @@
-
-
-
 using domain.src.church;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,7 +9,7 @@ public class UserMembershipConfiguration
         EntityTypeBuilder<UserMembership> builder)
     {
         builder.HasOne<Appuser>()
-            .WithMany()
+            .WithMany(user => user.MemberOfWichChurchAndBranch)
             .HasForeignKey(membership => membership.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
