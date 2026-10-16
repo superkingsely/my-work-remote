@@ -15,7 +15,7 @@ public class UserController : ControllerBase
     private readonly UserManager<Appuser> userManager;
 
     // Controller implementation
-    public UserController(Appdbcontext dbContext,UserManager<Appuser> userManager)
+    public UserController(Appdbcontext dbContext, UserManager<Appuser> userManager)
     {
         this.dbContext = dbContext;
         this.userManager = userManager;
@@ -26,15 +26,22 @@ public class UserController : ControllerBase
     [HttpGet("getusers")]
     public async Task<IActionResult> GetUsers()
     {
-        // Logic to retrieve users
-        var users = await userManager.Users.ToListAsync();
-        var res=users.Select(u => new
-        {
-            Names =$"{u.FirstName} {u.LastName}",
-            Email = u.Email,
-            WhichChurch = u.MemberOfWichChurchAndBranch
-        }).ToList();
-        return Ok(res);
+        var users = await userManager.Users
+            .Include(u => u.MemberOfWichChurchAndBranch)
+            .Select(u => new
+            {
+                Names = $"{u.FirstName} {u.LastName}",
+                Email = u.Email,
+                WhichChurch = u.MemberOfWichChurchAndBranch
+                    .Select(m => new
+                    {
+                        m.ChurchId,
+                        m.ChurchName
+                    })
+                    .ToList()
+            })
+            .ToListAsync();
+
+        return Ok(users);
     }
 }
-       
