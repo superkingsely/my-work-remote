@@ -217,47 +217,6 @@ namespace infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("UserMembership", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AppuserId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChurchBranchId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChurchBranchName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChurchId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("ChurchName")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AppuserId");
-
-                    b.ToTable("UserMemberships");
-                });
-
             modelBuilder.Entity("domain.src.church.Church", b =>
                 {
                     b.Property<Guid>("Id")
@@ -356,6 +315,49 @@ namespace infrastructure.Migrations
                     b.ToTable("ChurchBranches");
                 });
 
+            modelBuilder.Entity("domain.src.church.UserMembership", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AppuserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("ChurchId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ChurchName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppuserId");
+
+                    b.HasIndex("ChurchId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserMemberships");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -407,18 +409,32 @@ namespace infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("UserMembership", b =>
-                {
-                    b.HasOne("Appuser", null)
-                        .WithMany("MemberOfWichChurchAndBranch")
-                        .HasForeignKey("AppuserId");
-                });
-
             modelBuilder.Entity("domain.src.church.ChurchBranch", b =>
                 {
                     b.HasOne("domain.src.church.Church", "Church")
                         .WithMany("ChurchBranches")
                         .HasForeignKey("ChurchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Church");
+                });
+
+            modelBuilder.Entity("domain.src.church.UserMembership", b =>
+                {
+                    b.HasOne("Appuser", null)
+                        .WithMany("MemberOfWichChurchAndBranch")
+                        .HasForeignKey("AppuserId");
+
+                    b.HasOne("domain.src.church.Church", "Church")
+                        .WithMany()
+                        .HasForeignKey("ChurchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Appuser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

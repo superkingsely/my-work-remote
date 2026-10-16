@@ -8,7 +8,16 @@ public class Appdbcontext : IdentityDbContext<Appuser>
     {
     }
 
-    public DbSet<Church> Churches{get;set;}
-    public DbSet<ChurchBranch> ChurchBranches{get;set;}
-    public DbSet<UserMembership> UserMemberships{get;set;}
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+
+        builder.ApplyConfigurationsFromAssembly(
+            typeof(Appdbcontext).Assembly);
+    }
+
+    public DbSet<Church> Churches { get; set; }
+    public DbSet<ChurchBranch> ChurchBranches { get; set; }
+    public DbSet<UserMembership> UserMemberships { get; set; }
+
 }

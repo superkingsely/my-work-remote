@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 [ApiController]
 [Route("api/[controller]")]
 
-[Authorize]
+// [Authorize]
 public class UserController : ControllerBase
 {
     private readonly Appdbcontext dbContext;
@@ -28,6 +28,13 @@ public class UserController : ControllerBase
     {
         // Logic to retrieve users
         var users = await userManager.Users.ToListAsync();
-        return Ok(users);
+        var res=users.Select(u => new
+        {
+            Names =$"{u.FirstName} {u.LastName}",
+            Email = u.Email,
+            WhichChurch = u.MemberOfWichChurchAndBranch
+        }).ToList();
+        return Ok(res);
     }
 }
+       

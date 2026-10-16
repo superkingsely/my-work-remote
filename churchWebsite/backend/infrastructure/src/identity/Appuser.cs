@@ -1,5 +1,6 @@
 
 
+using domain.src.church;
 using Microsoft.AspNetCore.Identity;
 
 public class Appuser: IdentityUser

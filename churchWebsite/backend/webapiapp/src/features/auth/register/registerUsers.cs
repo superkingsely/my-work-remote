@@ -1,6 +1,7 @@
 
 // register users
 
+using domain.src.church;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,8 +82,8 @@ public class RegisterUsersController : ControllerBase
         // 5. Create a membership linked to the saved user.
         var membership = new UserMembership
         {
-            // UserId = user.Id,
-            ChurchId = church.Id.ToString(),
+            UserId = user.Id,
+            ChurchId = church.Id,
             ChurchName = church.Name
         };
 
