@@ -1,0 +1,49 @@
+
+<MudDrawer @bind-Open="Open"
+           Variant="DrawerVariant.Responsive"
+           Breakpoint="Breakpoint.Md"
+           Elevation="1"
+           Class="app-drawer">
+
+    <MudNavMenu Class="drawer-menu">
+        <MudNavLink Href="/"
+                    Match="NavLinkMatch.All"
+                    Icon="@Icons.Material.Filled.Dashboard">
+            Dashboard
+        </MudNavLink>
+
+        <MudNavLink Href="/members"
+                    Icon="@Icons.Material.Filled.People">
+            Members
+        </MudNavLink>
+
+        <MudNavLink Href="/departments"
+                    Icon="@Icons.Material.Filled.Groups">
+            Departments
+        </MudNavLink>
+
+        <MudNavLink Href="/events"
+                    Icon="@Icons.Material.Filled.Event">
+            Events
+        </MudNavLink>
+
+        <MudNavLink Href="/attendance"
+                    Icon="@Icons.Material.Filled.HowToReg">
+            Attendance
+        </MudNavLink>
+
+        <MudNavLink Href="/settings"
+                    Icon="@Icons.Material.Filled.Settings">
+            Settings
+        </MudNavLink>
+    </MudNavMenu>
+
+</MudDrawer>
+
+@code {
+    [Parameter]
+    public bool Open { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> OpenChanged { get; set; }
+}

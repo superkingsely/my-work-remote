@@ -1,11 +1,39 @@
-﻿@inherits LayoutComponentBase
+﻿
+@inherits LayoutComponentBase
+@using mudblazorapp.src.Components.Layout.Shared
 
 <MudThemeProvider />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-@Body
+<MudLayout Class="app-layout">
+    <AppBar OnMenuClick="ToggleDrawer" />
 
+    <SideDrawer Open="_drawerOpen"
+                OpenChanged="OnDrawerChanged" />
 
+    <MudMainContent Class="app-main">
+        <div class="app-content">
+            <MainContent>
+                @Body
+            </MainContent>
+        </div>
 
+        <AppFooter />
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen;
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void OnDrawerChanged(bool open)
+    {
+        _drawerOpen = open;
+    }
+}
