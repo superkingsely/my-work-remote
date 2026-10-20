@@ -2,7 +2,8 @@
     <div class="header-content">
         <span class="logo">Logo</span>
         
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Class="mobile menu" />
+        
+        
         <nav class="desktop">
             <ul>
                 <li>
@@ -15,35 +16,55 @@
 
                 </li>
                 <li>
-                    <MudLink Href="/product" Class="cursor-pointer" StartIcon="@Icons.Material.Filled.ProductionQuantityLimits">Product
+                    <MudLink Href="/product" Class="cursor-pointer"
+                             StartIcon="@Icons.Material.Filled.ProductionQuantityLimits">Product
                     </MudLink>
                 </li>
                 <li>
-                    <MudLink Href="/contact" Class="cursor-pointer" StartIcon="@Icons.Material.Filled.Phone">Conact</MudLink>
+                    <MudLink Href="/contact" Class="cursor-pointer" StartIcon="@Icons.Material.Filled.Phone">Conact
+                    </MudLink>
                 </li>
                 
             </ul>
         </nav>
-        <nav class="mobile">
-            <ul>
-                <li>
-                    
-                    <MudLink Href="/" Class="cursor-pointer" StartIcon="@Icons.Material.Filled.Home">Home</MudLink>
-                </li>
-                <li>
-                    <MudLink Href="/about" Class="cursor-pointer" StartIcon="@Icons.Material.Filled.Book">About
-                    </MudLink>
 
-                </li>
-                <li>
-                    <MudLink Href="/product" Class="cursor-pointer" StartIcon="@Icons.Material.Filled.ProductionQuantityLimits">Product
-                    </MudLink>
-                </li>
-                <li>
-                    <MudLink Href="/contact" Class="cursor-pointer" StartIcon="@Icons.Material.Filled.Phone">Conact</MudLink>
-                </li>
-                
-            </ul>
-        </nav>
+        <MudIconButton Class="mobile" Icon="@Icons.Material.Filled.Menu" Color="Color.Primary" Edge="Edge.Start"
+                       OnClick="@(() => ToggleDrawer(Anchor.End))" />
+
+        <MudDrawer @bind-Open="_open" Anchor="@_anchor" Variant="DrawerVariant.Temporary" Class="mobile" Elevation="1">
+
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6">My App</MudText>
+            </MudDrawerHeader>
+
+            <MudNavMenu>
+                <MudNavLink Icon="@Icons.Material.Filled.Home" Href="/" Match="NavLinkMatch.All">
+                    Home
+                </MudNavLink>
+
+                <MudNavLink  IconColor="@Color.Primary" Icon="@Icons.Material.Filled.Book" Href="/about">
+                    About
+                </MudNavLink>
+
+                <MudNavLink Href="/product">
+                    Product
+                </MudNavLink>
+                <MudNavLink Href="/contact">
+                    Contact
+                </MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+
     </div>
 </header>
+
+
+@code {
+    private bool _open = false;
+    private Anchor _anchor;
+    private void ToggleDrawer(Anchor anchor)
+    {
+        _open = !_open;
+        _anchor = anchor;
+    }
+}
