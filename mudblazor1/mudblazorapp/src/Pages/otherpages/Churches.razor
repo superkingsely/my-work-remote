@@ -1,0 +1,136 @@
+
+@page "/churches"
+
+@using MudBlazor
+@using mudblazorapp.src.Components
+@using mudblazorapp.src.feature.church.Models
+@using mudblazorapp.src.feature.church.Services
+
+@inject IChurchService ChurchService
+@inject IDialogService DialogService
+
+<PageTitle>Church Management</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+
+    <MudText Typo="Typo.h4" GutterBottom="true">
+        Church Management
+    </MudText>
+
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Add, edit and manage churches.
+    </MudText>
+
+    <ReusableDataGrid TItem="Church"
+                      Title="Churches"
+                      Items="@_churches"
+                      OnAdd="StartAdd"
+                      OnEdit="StartEdit"
+                      OnDelete="DeleteChurch">
+
+        <Columns>
+            <PropertyColumn T="Church"
+                            TProperty="string"
+                            Property="x => x.Name"
+                            Title="Church Name" />
+
+            <PropertyColumn T="Church"
+                            TProperty="string"
+                            Property="x => x.City"
+                            Title="City" />
+
+            <PropertyColumn T="Church"
+                            TProperty="string"
+                            Property="x => x.State"
+                            Title="State" />
+
+            <PropertyColumn T="Church"
+                            TProperty="string"
+                            Property="x => x.PhoneNumber"
+                            Title="Phone" />
+
+            <PropertyColumn T="Church"
+                            TProperty="string"
+                            Property="x => x.Email"
+                            Title="Email" />
+
+            <PropertyColumn T="Church"
+                            TProperty="bool"
+                            Property="x => x.ItHasBranch"
+                            Title="Has Branches" />
+        </Columns>
+
+    </ReusableDataGrid>
+
+</MudContainer>
+
+@code {
+    private List<Church> _churches = [];
+
+    protected override void OnInitialized()
+    {
+        _churches = ChurchService.GetAll();
+    }
+
+    private async Task StartAdd()
+    {
+        var parameters = new DialogParameters<ChurchDialog>
+        {
+            { x => x.Church, new Church() }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ChurchDialog>(
+            "Add Church",
+            parameters,
+            options);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: Church church })
+        {
+            ChurchService.Add(church);
+            _churches = ChurchService.GetAll();
+        }
+    }
+
+    private async Task StartEdit(Church church)
+    {
+        var parameters = new DialogParameters<ChurchDialog>
+        {
+            { x => x.Church, church }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ChurchDialog>(
+            "Edit Church",
+            parameters,
+            options);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: Church updatedChurch })
+        {
+            ChurchService.Update(updatedChurch);
+            _churches = ChurchService.GetAll();
+        }
+    }
+
+    private void DeleteChurch(Church church)
+    {
+        ChurchService.Delete(church.Id);
+        _churches = ChurchService.GetAll();
+    }
+}

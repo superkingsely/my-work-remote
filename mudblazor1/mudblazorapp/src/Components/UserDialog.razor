@@ -1,0 +1,86 @@
+
+@using mudblazorapp.src.feature.users.Models
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form">
+            <MudTextField T="string"
+                          Label="Full Name"
+                          @bind-Value="_user.Name"
+                          Required="true"
+                          RequiredError="Name is required"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Email"
+                          @bind-Value="_user.Email"
+                          Required="true"
+                          Validation="@(new EmailAddressAttribute().IsValid)"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Occupation"
+                          @bind-Value="_user.Occupation"
+                          Required="true"
+                          RequiredError="Occupation is required"
+                          Variant="Variant.Outlined" />
+        </MudForm>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Variant="Variant.Text"
+                   OnClick="Cancel">
+            Cancel
+        </MudButton>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Save">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public User User { get; set; } = new();
+
+    private User _user = new();
+    private MudForm? _form;
+
+    protected override void OnInitialized()
+    {
+        _user = new User
+        {
+            Id = User.Id,
+            Name = User.Name,
+            Email = User.Email,
+            Occupation = User.Occupation
+        };
+    }
+
+    private async Task Save()
+    {
+        if (_form is null)
+            return;
+
+        await _form.Validate();
+
+        if (!_form.IsValid)
+            return;
+
+        MudDialog.Close(DialogResult.Ok(_user));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

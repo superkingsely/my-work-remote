@@ -1,5 +1,7 @@
 using MudBlazor.Services;
 using mudblazorapp.src;
+using mudblazorapp.src.feature.church.Services;
+using mudblazorapp.src.feature.users.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +11,9 @@ builder.Services.AddMudServices();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSingleton<IUserService, UserService>();
+builder.Services.AddSingleton<IChurchService, ChurchService>();
 
 var app = builder.Build();
 

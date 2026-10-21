@@ -1,9 +1,127 @@
-﻿@page "/"
+﻿
+@page "/"
 
-<PageTitle>Home</PageTitle>
+@using mudblazorapp.src.Components
+@using mudblazorapp.src.feature.users.Models
+@using mudblazorapp.src.feature.users.Services
+@using mudblazorapp.src.feature.users
+@using MudBlazor
 
-<MudText Typo="Typo.h1" Color="Color.Primary"  Style="font-weight: 700;" Class="mt-0">Welcome to MudBlazor!</MudText>
+@inject IUserService UserService
+@inject IDialogService DialogService
 
-@code{
+<PageTitle>Users</PageTitle>
 
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+
+    <MudText Typo="Typo.h4" GutterBottom="true">
+        User Management
+    </MudText>
+
+    <MudText Typo="Typo.body2" Class="mb-4">
+        Practise adding, editing and deleting users.
+    </MudText>
+
+    <ReusableDataGrid TItem="User"
+                      Title="Users"
+                      Items="@_users"
+                      OnAdd="StartAdd"
+                      OnEdit="StartEdit"
+                      OnDelete="DeleteUser">
+
+        <Columns>
+            <PropertyColumn T="User"
+                            TProperty="int"
+                            Property="x => x.Id"
+                            Title="ID" />
+
+            <PropertyColumn T="User"
+                            TProperty="string"
+                            Property="x => x.Name"
+                            Title="Full Name" />
+
+            <PropertyColumn T="User"
+                            TProperty="string"
+                            Property="x => x.Email"
+                            Title="Email" />
+
+            <PropertyColumn T="User"
+                            TProperty="string"
+                            Property="x => x.Occupation"
+                            Title="Occupation" />
+        </Columns>
+
+    </ReusableDataGrid>
+
+</MudContainer>
+
+@code {
+    private List<User> _users = [];
+
+    protected override void OnInitialized()
+    {
+        _users = UserService.GetAll();
+    }
+
+    private async Task StartAdd()
+    {
+        var parameters = new DialogParameters<UserDialog>
+        {
+            { x => x.User, new User() }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<UserDialog>(
+            "Add User",
+            parameters,
+            options);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: User user })
+        {
+            UserService.Add(user);
+            _users = UserService.GetAll();
+        }
+    }
+
+    private async Task StartEdit(User user)
+    {
+        var parameters = new DialogParameters<UserDialog>
+        {
+            { x => x.User, user }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<UserDialog>(
+            "Edit User",
+            parameters,
+            options);
+
+        var result = await dialog.Result;
+
+        if (result is { Canceled: false, Data: User updatedUser })
+        {
+            UserService.Update(updatedUser);
+            _users = UserService.GetAll();
+        }
+    }
+
+    private void DeleteUser(User user)
+    {
+        UserService.Delete(user.Id);
+        _users = UserService.GetAll();
+    }
 }

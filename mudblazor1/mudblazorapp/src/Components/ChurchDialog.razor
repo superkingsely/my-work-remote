@@ -1,0 +1,120 @@
+
+@using mudblazorapp.src.feature.church.Models
+@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form">
+
+            <MudTextField T="string"
+                          Label="Church Name"
+                          @bind-Value="_church.Name"
+                          Required="true"
+                          RequiredError="Church name is required"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Address"
+                          @bind-Value="_church.Address"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="City"
+                          @bind-Value="_church.City"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="State"
+                          @bind-Value="_church.State"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Zip Code"
+                          @bind-Value="_church.ZipCode"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Phone Number"
+                          @bind-Value="_church.PhoneNumber"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudTextField T="string"
+                          Label="Email"
+                          @bind-Value="_church.Email"
+                          Validation="@(new EmailAddressAttribute().IsValid)"
+                          Variant="Variant.Outlined"
+                          Class="mb-3" />
+
+            <MudCheckBox T="bool"
+                         @bind-Value="_church.ItHasBranch"
+                         Label="This church has branches" />
+
+        </MudForm>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Variant="Variant.Text"
+                   OnClick="Cancel">
+            Cancel
+        </MudButton>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Save">
+            Save
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public Church Church { get; set; } = new();
+
+    private Church _church = new();
+    private MudForm? _form;
+
+    protected override void OnInitialized()
+    {
+        // Work on a copy so Cancel doesn't change the original church.
+        _church = new Church
+        {
+            Id = Church.Id,
+            Name = Church.Name,
+            Address = Church.Address,
+            City = Church.City,
+            State = Church.State,
+            ZipCode = Church.ZipCode,
+            PhoneNumber = Church.PhoneNumber,
+            Email = Church.Email,
+            ItHasBranch = Church.ItHasBranch
+        };
+    }
+
+    private async Task Save()
+    {
+        if (_form is null)
+            return;
+
+        await _form.Validate();
+
+        if (!_form.IsValid)
+            return;
+
+        MudDialog.Close(DialogResult.Ok(_church));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
