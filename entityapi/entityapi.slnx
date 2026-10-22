@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="entityapi/entityapi.csproj" />
+  <Project Path="infrastructure/infrastructure.csproj" />
 </Solution>
