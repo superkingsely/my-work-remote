@@ -27,12 +27,21 @@ public class RegisterController : ControllerBase
         {
             FirstName=user.FirstName,
             LastName=user.LastName,
-            Email=user.Email
+            Email=user.Email,
+            UserName=user.Email
+            
         };
         var result=await userManager.CreateAsync(newUser,user.Password);
         if (!result.Succeeded)
         {
-            return BadRequest("user not registered meet cj for debug");
+            var errors = result.Errors.Select(e => e.Description);
+            return BadRequest(new
+            {
+                message="user not registered meet cj for debug",
+                error=errors
+            });
+            // the below worked!! i.e the string type
+            // return BadRequest("user not registered meet cj for debug");
         }
         var res = new
         {
