@@ -15,8 +15,12 @@ public class RegisterController : ControllerBase
     }
 
     [HttpPost("user")]
-    public async Task<IActionResult> createUser([FromBody] RegisterReq user)
+    public async Task<IActionResult> createUser([FromBody] RegisterReq user,[FromQuery] string churchId)
     {
+        if (string.IsNullOrWhiteSpace(churchId))
+        {
+            return BadRequest($"Church id required --{churchId}--");
+        }
         var existUser=await userManager.FindByEmailAsync(user.Email);
         if(existUser is not null)
         {
