@@ -41,7 +41,9 @@ public class ChurchController : ControllerBase
         {
             Id=c.Id,
             name=c.Name,
-            address=c.Address
+            address=c.Address,
+            createdby=c.CreatedBy,
+            // memebers=c.
         }).ToListAsync();
 
         var res= new

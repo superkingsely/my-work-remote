@@ -19,4 +19,6 @@ public class Church:BaseAudit
     
     // Tracks if this specific local branch is active
     public bool IsActive { get; set; } = true;
+
+    // public ICollection<UserChurch>
 }

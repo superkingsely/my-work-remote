@@ -19,11 +19,19 @@ public class UserController : ControllerBase
     {
         var users=await userManager.Users.ToListAsync();
         var count=users.Count;
-
+        var transUser = users.Select(u => new
+        {
+            Id=u.Id,
+            firstname=u.FirstName,
+            lastname=u.LastName,
+            email=u.Email,
+            userchurches=u.userChurches,
+            nosofchurchgoingto=u.userChurches.Count
+        });
         var res = new
         {   
             count=count,
-            Users=users
+            Users=transUser
         };
         return Ok(res);
     }
