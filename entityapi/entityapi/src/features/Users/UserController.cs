@@ -14,49 +14,64 @@ public class UserController : ControllerBase
         this.userManager = userManager;
     }
 
+
     [HttpGet("get-all-users")]
     public async Task<IActionResult> GetAllUsers()
     {
-        var users=await userManager.Users.ToListAsync();
-        var count=users.Count;
+        // 1. Retrieve users, their memberships, and their churches
+        var users = await userManager.Users
+            .Include(u => u.userChurches)
+            .ThenInclude(uc => uc.Church)
+            .ToListAsync();
+
+        // 2. Format the response
         var transUser = users.Select(u => new
         {
-            Id=u.Id,
-            firstname=u.FirstName,
-            lastname=u.LastName,
-            email=u.Email,
-            userchurches=u.userChurches,
-            nosofchurchgoingto=u.userChurches.Count
+            id = u.Id,
+            firstname = u.FirstName,
+            lastname = u.LastName,
+            email = u.Email,
+
+            userchurches = u.userChurches.Select(uc => new
+            {
+                churchid = uc.ChurchId,
+                churchname = uc.Church.Name
+            }).ToList(),
+
+            nosofchurchgoingto = u.userChurches.Count
+        }).ToList();
+
+        // 3. Return the result
+        return Ok(new
+        {
+            count = transUser.Count,
+            users = transUser
         });
-        var res = new
-        {   
-            count=count,
-            Users=transUser
-        };
-        return Ok(res);
     }
+
     [HttpDelete("delete-user")]
-    public async Task<IActionResult> DeleteUsers([FromQuery] string email)
+    public async Task<IActionResult> DeleteUsers([FromQuery] string id)
     {
-        var isusers=await userManager.FindByEmailAsync(email);
-        if(isusers is null)
+        var isusers = await userManager.FindByIdAsync(id);
+
+        if (isusers is null)
         {
             return BadRequest("user cant be found");
         }
-        var result=await userManager.DeleteAsync(isusers);
+        var result = await userManager.DeleteAsync(isusers);
         if (!result.Succeeded)
         {
-            var error=result.Errors.Select(e=>e.Description);
+            var error = result.Errors.Select(e => e.Description);
             return BadRequest(new
             {
-                message="user failed to delete",
-                error=error
+                message = "user failed to delete",
+                error = error
             });
         }
         var res = new
-        {   
-            message="delete succefull",
-            User=isusers
+        {
+            message = "delete succefull",
+            User = isusers
         };
         return Ok(res);
     }

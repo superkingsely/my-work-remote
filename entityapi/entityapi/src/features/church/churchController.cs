@@ -59,7 +59,15 @@ public class ChurchController : ControllerBase
     [HttpDelete("delete-church")]
     public async Task<IActionResult> DeleteChurch([FromQuery] string id)
     {
-        var isexist= await context.Churches.FindAsync(id);
+         if (!Guid.TryParse(id, out var parsedId))
+        {
+            return BadRequest(new
+            {
+                message = "A valid church ID is required."
+            });
+        }
+
+        var isexist= await context.Churches.FindAsync(parsedId);
         if(isexist is null)
         {
             return BadRequest($"church {id} does not exist");

@@ -17,103 +17,143 @@ public class RegisterController : ControllerBase
         this.context = context;
     }
 
-    [HttpPost("user")]
-    public async Task<IActionResult> createUser([FromBody] RegisterReq user, [FromQuery] string churchId)
+   
+[HttpPost("user")]
+public async Task<IActionResult> CreateUser(
+    [FromBody] RegisterReq user,
+    [FromQuery] string churchId)
+{
+    // 1. Validate the church ID
+    if (!Guid.TryParse(churchId, out var parsedChurchId))
     {
-        // convert string to guid
-        if (!Guid.TryParse(churchId, out var parsedChurchId))
+        return BadRequest(new
         {
-            return BadRequest(new
+            message = "A valid church ID is required."
+        });
+    }
+
+    // 2. Check whether the church exists
+    var churchExists = await context.Churches
+        .AnyAsync(c => c.Id == parsedChurchId);
+
+    if (!churchExists)
+    {
+        return NotFound(new
+        {
+            message = "Church not found."
+        });
+    }
+
+    // 3. Check whether this user already has an account
+    var existUser = await userManager.FindByEmailAsync(user.Email);
+
+    User targetUser;
+
+    if (existUser is not null)
+    {
+        // 4. The user exists. Check membership in THIS church.
+        var alreadyMember = await context.UserChurches
+            .AnyAsync(uc =>
+                uc.UserId == existUser.Id &&
+                uc.ChurchId == parsedChurchId);
+
+        if (alreadyMember)
+        {
+            return Conflict(new
             {
-                message = "A valid church ID is required."
+                message = "This user is already a member of this church."
             });
         }
 
-        var existchurch = await context.Churches.AnyAsync(c => c.Id == parsedChurchId);
-        if (!existchurch)
+        // Verify ownership of the existing account.
+        if (!await userManager.CheckPasswordAsync(existUser, user.Password))
         {
-            return NotFound(new
+            return Unauthorized(new
             {
-                message = "Church not found."
+                message = "Invalid credentials."
             });
         }
-        var existUser = await userManager.FindByEmailAsync(user.Email);
-        if (existUser is not null)
+
+        // Existing account, new church membership.
+        targetUser = existUser;
+
+        var membership = new UserChurch
         {
-            // check if user exist in the current church reg
+            UserId = targetUser.Id,
+            ChurchId = parsedChurchId
+        };
 
-            var alreadyMember = await context.UserChurches
-          .AnyAsync(uc =>
-              uc.UserId == existUser.Id &&
-              uc.ChurchId == parsedChurchId);
-
-            if (alreadyMember)
-            {
-                return Conflict(new
-                {
-                    message = "This user is already a member of this church."
-                });
-            }
-            // return BadRequest(new { Message = "user already exist pls" });
-        }
-       
+        context.UserChurches.Add(membership);
+        await context.SaveChangesAsync();
+    }
+    else
+    {
+        // 5. No account exists: create a new user.
         await using var transaction =
-        await context.Database.BeginTransactionAsync();
-        var newUser = new User
+            await context.Database.BeginTransactionAsync();
+
+        targetUser = new User
         {
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
             UserName = user.Email
-
         };
-        var result = await userManager.CreateAsync(newUser, user.Password);
+
+        var result = await userManager.CreateAsync(
+            targetUser,
+            user.Password
+        );
+
         if (!result.Succeeded)
         {
             await transaction.RollbackAsync();
-            var errors = result.Errors.Select(e => e.Description);
+
             return BadRequest(new
             {
-                message = "user not registered meet cj for debug",
-                error = errors
+                message = "User registration failed.",
+                errors = result.Errors.Select(e => e.Description)
             });
-            // the below worked!! i.e the string type
-            // return BadRequest("user not registered meet cj for debug");
         }
+
+        // Create the user's first church membership.
         var membership = new UserChurch
         {
-            UserId = newUser.Id,
+            UserId = targetUser.Id,
             ChurchId = parsedChurchId
         };
+
         context.UserChurches.Add(membership);
 
         await context.SaveChangesAsync();
         await transaction.CommitAsync();
-        var churches = await context.UserChurches
-            .Where(uc => uc.UserId == newUser.Id)
-            .Include(uc => uc.Church)
-            .Select(uc => new
-            {
-                uc.ChurchId,
-                ChurchName = uc.Church.Name
-            })
-            .ToListAsync();
-
-        var res = new
-        {
-            message = "registration successful bro",
-            userchurches = churches,
-            registereduser = new
-            {
-                newUser.Id,
-                newUser.FirstName,
-                newUser.LastName,
-                newUser.Email
-            },
-
-        };
-        return Ok(res);
     }
+
+    // 6. Retrieve all churches belonging to this user.
+    var churches = await context.UserChurches
+        .Where(uc => uc.UserId == targetUser.Id)
+        .Include(uc => uc.Church)
+        .Select(uc => new
+        {
+            uc.ChurchId,
+            ChurchName = uc.Church.Name
+        })
+        .ToListAsync();
+
+    // 7. Return the user and all their church memberships.
+    return Ok(new
+    {
+        message = "User and church membership processed successfully.",
+        registereduser = new
+        {
+            targetUser.Id,
+            targetUser.FirstName,
+            targetUser.LastName,
+            targetUser.Email
+        },
+        userchurches = churches
+    });
+}
 
 
 }
