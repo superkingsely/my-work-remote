@@ -129,6 +129,7 @@ public async Task<IActionResult> CreateUser(
         await transaction.CommitAsync();
     }
 
+   
     // 6. Retrieve all churches belonging to this user.
     var churches = await context.UserChurches
         .Where(uc => uc.UserId == targetUser.Id)
